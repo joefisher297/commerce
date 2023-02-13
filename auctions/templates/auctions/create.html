@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h1>Add New Listing</h1>
+
+{% if user.is_authenticated %}
+
+<form action="{% url 'create' %}" method="post">
+	{% csrf_token %}
+	<label for="title">Listing Title</label><br>
+	<input type="text" id="title" name="title" required><br>
+
+	<label for="description">Description</label><br>
+	<textarea rows="3" id="description" name="description" required></textarea><br>
+
+	<label for="startingbid">Starting Bid</label><br>
+	<input type="number" id="startingbid" name="startingbid" required><br>
+
+	<label for="imageurl">Image URL (optional)</label><br>
+	<input type="url" id="imageurl" name="imageurl"><br>
+
+	<input type="hidden" name="ownerid" value="{{ user.id }}">
+
+	<input type="submit" name="submit" value="Submit">
+
+</form>
+
+{% else %}
+<h3 style="color: red">You must be logged in to create a new listing</h3>
+
+{% endif %}
+
+{% endblock %}

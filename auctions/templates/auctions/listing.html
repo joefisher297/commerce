@@ -1,0 +1,64 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h1>{{ listing.title }}</h1>
+
+<img src="{{ listing.imageurl }}" style="max-width: 400px;">
+
+<p>{{ listing.description }}</p>
+<p>Listing by: {{ listing.owner }}</p>
+<p>Current price: ${{ listing.currentbid }}</p>
+
+{% if user.is_authenticated %}
+<form action="{% url 'bid' %}" method="post">
+	{% csrf_token %}
+	<label for="newbid">Bid on this item:</label><br>
+	<input type="number" id="newbid" name="newbid">
+	<input type="hidden" name="bidder_id" value="{{ user.id }}">
+	<input type="hidden" name="listing_id" value = "{{ listing.id }}">
+	<input type="submit" name="submit" value="Submit">
+</form>
+
+{% if messages %}
+
+    {% for message in messages %}
+    <div class="messages">
+        <p {% if message.tags %} style="color:red" class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    </div>
+    {% endfor %}
+
+{% endif %}
+
+{% else %}
+<p style="color:red">You must log in to bid on this item</p>
+
+{% endif %}
+
+<p>Watched by:</p>
+<ul>
+	{% for watcher in listing.watchers.all %}
+	<li>{{ watcher }}</li>
+	{% endfor %}
+</ul>
+
+
+{% if user.is_authenticated %}
+	{% if user in listing.watchers.all %}
+	<form action="{% url 'watchlist' %}" method="POST">
+		{% csrf_token %}
+		<input type="submit" name="changelist" value="Remove From Watchlist">
+		<input type="hidden" name="userid" value="{{ user.id }}" />
+		<input type="hidden" name="listingid" value="{{ listing.id }}" />
+	</form>
+	{% else %}
+	<form action="{% url 'watchlist' %}" method="POST">
+		{% csrf_token %}
+		<input type="submit" name="changelist" value="Add to Watchlist">
+		<input type="hidden" name="userid" value="{{ user.id }}" />
+		<input type="hidden" name="listingid" value="{{ listing.id }}" />
+	</form>
+	{% endif %}
+{% endif %}
+
+{% endblock %}
