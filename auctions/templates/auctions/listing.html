@@ -30,6 +30,17 @@
 
 	{% endif %}
 
+	{% if listing.owner == user %}
+		<form action="{% url 'close' %}" method="post">
+			{% csrf_token %}
+			<input type="submit", name="close" value="Close Listing">
+			<input type="hidden" name="listing_id" value="{{ listing.id }}">
+			<input type="hidden" name="user_id" value="{{ user.id }}">
+		</form>
+
+
+	{% endif %}
+
 {% elif listing.active == True %}
 	<p style="color:red">You must log in to bid on this item</p>
 

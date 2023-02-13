@@ -17,8 +17,13 @@ def index(request):
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
 
+
     bids = listing.bids.all().order_by('-value')
-    winningbid = bids[0]
+    if len(bids)>0:
+        winningbid = bids[0]
+    else:
+        winningbid = Bid(value=listing.startingbid, listing=listing)
+    
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
@@ -103,7 +108,14 @@ def bid(request):
 
 def close(request):
     if request.method=="POST":
-        pass
+        listing_id = request.POST["listing_id"]
+        user_id = request.POST["user_id"]
+
+        listing = Listing.objects.get(id=listing_id)
+
+        listing.active = False
+        listing.save()
+        return HttpResponseRedirect(reverse('listing', args=(),kwargs={'listing_id': listing_id}))
 
 
 def login_view(request):
