@@ -17,8 +17,12 @@ def index(request):
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
 
+    bids = listing.bids.all().order_by('-value')
+    winningbid = bids[0]
+
     return render(request, "auctions/listing.html", {
-        "listing": listing
+        "listing": listing,
+        "winningbid": winningbid
         })
 
 
@@ -95,6 +99,11 @@ def bid(request):
 
     else:
         return HttpResponseRedirect(reverse('listing'))
+
+
+def close(request):
+    if request.method=="POST":
+        pass
 
 
 def login_view(request):

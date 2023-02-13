@@ -8,30 +8,35 @@
 
 <p>{{ listing.description }}</p>
 <p>Listing by: {{ listing.owner }}</p>
-<p>Current price: ${{ listing.currentbid }}</p>
+<p>Current price: ${{ winningbid.value }}</p>
 
-{% if user.is_authenticated %}
-<form action="{% url 'bid' %}" method="post">
-	{% csrf_token %}
-	<label for="newbid">Bid on this item:</label><br>
-	<input type="number" id="newbid" name="newbid">
-	<input type="hidden" name="bidder_id" value="{{ user.id }}">
-	<input type="hidden" name="listing_id" value = "{{ listing.id }}">
-	<input type="submit" name="submit" value="Submit">
-</form>
+{% if user.is_authenticated and listing.active == True %}
+	<form action="{% url 'bid' %}" method="post">
+		{% csrf_token %}
+		<label for="newbid">Bid on this item:</label><br>
+		<input type="number" id="newbid" name="newbid">
+		<input type="hidden" name="bidder_id" value="{{ user.id }}">
+		<input type="hidden" name="listing_id" value = "{{ listing.id }}">
+		<input type="submit" name="submit" value="Submit">
+	</form>
 
-{% if messages %}
+	{% if messages %}
 
-    {% for message in messages %}
-    <div class="messages">
-        <p {% if message.tags %} style="color:red" class="{{ message.tags }}"{% endif %}>{{ message }}</p>
-    </div>
-    {% endfor %}
+	    {% for message in messages %}
+	    <div class="messages">
+	        <p {% if message.tags %} style="color:red" class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+	    </div>
+	    {% endfor %}
 
-{% endif %}
+	{% endif %}
+
+{% elif listing.active == True %}
+	<p style="color:red">You must log in to bid on this item</p>
 
 {% else %}
-<p style="color:red">You must log in to bid on this item</p>
+
+	<p style="color: red">This listing is closed</p>
+	<p>Winning bid was ${{ winningbid.value }} by {{ winningbid.bidder }}</p>
 
 {% endif %}
 
